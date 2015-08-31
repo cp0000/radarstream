@@ -31,6 +31,7 @@ def setupWeibo ():
     access_token    = '2.00JoploBrbn_OD9765fad696I7EQFD'
     expires         = '1598191620'
     client.set_access_token(access_token, expires)
+    return client;
 
 
 def initDB ():
@@ -56,10 +57,15 @@ def insert (bugid, status, originator, product, title):
 
     db.commit()
 
-def spider ():
+def spider (client):
     print 'start spider ...'
     request = urllib2.Request('http://openradar.appspot.com/')
-    request.add_header('User-Agent', 'hello_client')
+    # request.add_header('User-Agent', 'hello_client')
+    user_agent = ( 
+        'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.11 (KHTML, like Gecko) '
+        'Chrome/20.0.1132.57 Safari/536.11'
+        )
+    request.add_header('User-Agent', user_agent)
     page    = urllib2.urlopen(request)
 
     soup    = BeautifulSoup(page)
@@ -92,12 +98,12 @@ def spider ():
                 print content
                 client.statuses.update.post(status=content)
                 insert (dic['Number'], dic['Status'], dic['Originator'], dic['Product'], dic['Title']);
-                time.sleep(60*3)
+                time.sleep(60*3) 
 
 if __name__=='__main__':
-    setupWeibo ();
+    client = setupWeibo ();
     initDB ();
-    spider ();
+    spider (client);
 
 
 
